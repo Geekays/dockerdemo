@@ -1,0 +1,25 @@
+FROM microsoft/iis
+
+SHELL ["powershell"]
+
+RUN Install-WindowsFeature NET-Framework-45-ASPNET ; \  
+    Install-WindowsFeature Web-Asp-Net45
+
+COPY devopsdemo/ c:\devopsdemo
+
+#EXPOSE 8081
+RUN Remove-WebSite -Name 'Default Web Site'  
+RUN powershell -NoProfile -Command \
+    Import-module IISAdministration; \
+New-Website -Name 'devopsdemo' -Port 80 \  
+    -PhysicalPath 'c:\devopsdemo' -ApplicationPool '.NET v4.5'
+EXPOSE 80
+
+#RUN powershell -NoProfile -Command \
+#    Import-module IISAdministration; \
+#    New-IISSite -Name "devopsdemo" -PhysicalPath c:\devopsdemo -BindingInformation "*:8081:"
+#
+
+#RUN powershell -NoProfile -Command \
+#    Import-module IISAdministration; \
+#New-WebApplication -Name "devopsdemo" -Site '"devopsdemo' -PhysicalPath "c:\devopsdemo" -ApplicationPool "DefaultAppPool"

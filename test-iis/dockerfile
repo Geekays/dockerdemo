@@ -1,0 +1,12 @@
+FROM microsoft/iis
+
+RUN ["powershell.exe", "Install-WindowsFeature NET-Framework-45-ASPNET"]  
+RUN ["powershell.exe", "Install-WindowsFeature Web-Asp-Net45"]
+
+COPY devopsdemo/ c:\\web-app
+
+EXPOSE 8081
+
+RUN powershell -NoProfile -Command \
+    Import-module IISAdministration; \
+    New-IISSite -Name "devopsdemo" -PhysicalPath c:\\web-app -BindingInformation "*:8081:"
